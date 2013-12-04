@@ -4,7 +4,11 @@
 using std::cout;
 using std::cin;
 using std::vector;
-typedef std::pair<int, int> MinPair;
+
+
+typedef struct {
+    int data[2];
+} MinPair;
 
 
 double lb(size_t x) {
@@ -12,25 +16,23 @@ double lb(size_t x) {
 }
 
 
-class SparseTable
-{
+class SparseTable {
 public:
-    SparseTable(const std::vector<int>& v);
-    int RMQ(int l, int r);
+    SparseTable(const vector<int> &v);
+    int SecontOrderStatistic(int l, int r);
 private:
-    MinPair findMinPair(const MinPair& m1, const MinPair& m2);
-    MinPair findMinPair(const vector<MinPair>& row, int ind1, int ind2);
-    vector<MinPair> convertToMinPairVec(const vector<int>& vec);
+    MinPair findMinPair(const MinPair m1, const MinPair m2);
+    MinPair findMinPair(const vector<MinPair> &row, int ind1, int ind2);
+    vector<MinPair> convertToMinPairVec(const vector<int> &vec);
 
-    vector<vector<MinPair> > table;
+    vector< vector<MinPair> > table;
 };
 
-SparseTable::SparseTable(const std::vector<int>& v)
-{
+SparseTable::SparseTable(const vector<int> &v) {
     vector<MinPair> vec = convertToMinPairVec(v);
     table.push_back(vec); // first row
 
-    for (int i = 1; i < (lb(vec.size())) + 1; ++i)
+    for (int i = 1; i < lb(vec.size()) + 1; ++i)
     {
         int offset = (1 << (i - 1));
         vector<MinPair> row;
@@ -40,59 +42,51 @@ SparseTable::SparseTable(const std::vector<int>& v)
     }
 }
 
-int SparseTable::RMQ(int l, int r)
-{
+int SparseTable::SecontOrderStatistic(int l, int r) {
     if (l == r)
-        return table[0][l - 1].first;
+        return table[0][l - 1].data[0];
     int k = lb(r-l);
-    return findMinPair(table[k][l - 1], table[k][r - (1 << k)]).second;
+    return findMinPair(table[k][l - 1], table[k][r - (1 << k)]).data[1];
 }
 
-MinPair SparseTable::findMinPair(const MinPair& m1, const MinPair& m2)
-{
-    int a[2] = { m1.first, m1.second };
-    int b[2] = { m2.first, m2.second };
-    int res[2] = { 0 };
+MinPair SparseTable::findMinPair(const MinPair a, const MinPair b) {
+    MinPair res;
 
-    if (a[0] == a[1] && b[0] == b[1])
+    if (a.data[0] == a.data[1] && b.data[0] == b.data[1])
     {
-        if (a[0] < b[0]) {
-            res[0] = a[0];
-            res[1] = b[0];
+        if (a.data[0] < b.data[0]) {
+            res.data[0] = a.data[0];
+            res.data[1] = b.data[0];
         } else {
-            res[0] = b[0];
-            res[1] = a[0];
+            res.data[0] = b.data[0];
+            res.data[1] = a.data[0];
         }
     } else {
-        int i = 0, j = 0, k = 0;
-        for ( ; k < 2; ++k)
-        {
-            if (a[i] == b[j])
-            {
-                res[k] = a[i++];
+        for (int i = 0, j = 0, k = 0; k < 2; ++k) {
+            if (a.data[i] == b.data[j]) {
+                res.data[k] = a.data[i++];
                 ++j;
-            } else if (a[i] < b[j]) {
-                res[k] = a[i++];
+            } else if (a.data[i] < b.data[j]) {
+                res.data[k] = a.data[i++];
             } else {
-                res[k] = b[j++];
+                res.data[k] = b.data[j++];
             }
         }
     }
-    return MinPair(res[0], res[1]);
+
+    return res;
 }
 
-MinPair SparseTable::findMinPair(const vector<MinPair>& row, int ind1, int ind2)
-{
-    const MinPair& m1 = row[ind1];
-    const MinPair& m2 = row[ind2];
-    return findMinPair(m1, m2);
+MinPair SparseTable::findMinPair(const vector<MinPair>& row, int ind1, int ind2) {
+    return findMinPair(row[ind1], row[ind2]);
 }
 
-std::vector<MinPair> SparseTable::convertToMinPairVec(const std::vector<int>& vec)
-{
-    std::vector<MinPair> res;
-    for (size_t i = 0; i < vec.size(); ++i)
-        res.push_back(MinPair(vec[i], vec[i]));
+vector<MinPair> SparseTable::convertToMinPairVec(const vector<int> &vec) {
+    vector<MinPair> res;
+    for (size_t i = 0; i < vec.size(); ++i) {
+        MinPair pair = { {vec[i], vec[i]} };
+        res.push_back(pair);
+    }
     return res;
 }
 
@@ -108,7 +102,7 @@ int main() {
     int l, r;
     for (int i = 0; i < m; ++i) {
         cin >> l >> r;
-        cout << st.RMQ(l, r) << "\n";
+        cout << st.SecontOrderStatistic(l, r) << "\n";
     }
 
     return 0;
