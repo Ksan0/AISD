@@ -33,15 +33,15 @@ Sint64 min_roads_dist(vector<Sint64> &coords)
 
 int main()
 {
-	int n;
-	cin >> n;
-	vector<Sint64> towns(n);
+    int n;
+    cin >> n;
+    vector<Sint64> towns(n);
     for(unsigned int i = 0; i < towns.size(); i++)
-		cin >> towns[i];
+        cin >> towns[i];
 
     Sint64 res = min_roads_dist(towns);
     cout << res;
 
-	// cout << "\n\n"; system("pause");
-	return 0;
+    // cout << "\n\n"; system("pause");
+    return 0;
 }
