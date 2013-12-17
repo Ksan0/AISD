@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-struct TriangleMatrix;
+class TriangleMatrix;
 typedef long long cell_t;
 typedef cell_t (*fill_function)(const TriangleMatrix &matrix, int x, int y);
 
