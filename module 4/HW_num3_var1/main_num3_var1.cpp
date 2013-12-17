@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-#define Sint64 long long
+typedef long long Sint64;
 
 
 // f(n, m) = sum(k=1..m, f(n-k, k))
