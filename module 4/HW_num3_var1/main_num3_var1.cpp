@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-// f(n, m) = sum(k=1..m, f(n-k, k[-1]))
+// f(n, m) = sum(k=1..m, f(n-k, k))
 
 class TriangleMatrix
 {
