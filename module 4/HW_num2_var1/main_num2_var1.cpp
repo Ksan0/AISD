@@ -6,23 +6,28 @@ using namespace std;
 typedef long long Sint64;
 
 
-Sint64 min_roads_dist(vector<Sint64> coords)
+Sint64 min_roads_dist(vector<Sint64> &coords)
 {
-    if(coords.empty() || coords.size() == 1)
+    if(coords.empty() || coords.size() == 1)  // impossible to calculate
         return 0;
-    if(coords.size() == 2)
-        return coords[1] - coords[0];
-
+    
     sort(coords.begin(), coords.end());
-    vector<Sint64> road(coords.size(), 0);
 
-	road[0] = coords[1] - coords[0];
-    road[1] = road[0];
+    Sint64 a0 = coords[1] - coords[0];
+    Sint64 a1 = a0;
+    Sint64 a2 = 0;
 
     for(unsigned int i = 1; i < coords.size() - 1 ; ++i)
-		road[i+1] = coords[i+1] - coords[i] + min(road[i-1], road[i]);
+    {
+        a2 = coords[i+1] - coords[i] + min(a0, a1);
+        
+        // move left
+        a0 = a1;
+        a1 = a2;
+        a2 = 0;
+    }
 
-    return road.back();
+    return a1;
 }
 
 
