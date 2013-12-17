@@ -39,6 +39,6 @@ int main() {
     Sint64 res = min_roads_dist(towns);
     cout << res;
 
-    // cout << "\n\n"; system("pause");
+    cout << "\n\n"; system("pause");
     return 0;
 }
