@@ -4,6 +4,7 @@ using namespace std;
 
 // f(n, m) = sum(k=1..m, f(n-k, k))
 
+// Can't do task with only vector: main diagonal calculate with the use of most of the cells of the matrix
 class TriangleMatrix
 {
 public:
