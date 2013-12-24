@@ -3,7 +3,7 @@
 #include <algorithm>
 using namespace std;
 
-// pair<int, int> : pair<s, m>
+// pair<int, int> : pair<m, s>
 #define get_s(p) p.second
 #define get_m(p) p.first
 
