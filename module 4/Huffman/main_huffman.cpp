@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>  // frequency table
-#include <bitset>  // better, than vector(8) or char to work with bits
+#include <bitset>  // better, than vector or char[] to work with bits
 #include <queue>  // for creating tree
 #include <stack>  // go through the tree
 using namespace std;
