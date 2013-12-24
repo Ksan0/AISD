@@ -2,20 +2,19 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector> // frequency table
-#include <bitset> // better, than vector(8) or char to work with bits
-#include <queue> // for creating tree
-#include <stack> // go through the tree
+#include <vector>  // frequency table
+#include <bitset>  // better, than vector(8) or char to work with bits
+#include <queue>  // for creating tree
+#include <stack>  // go through the tree
 using namespace std;
 
 
-struct HNode
-{
-    HNode() : left(NULL), right(NULL), ch(0), weight(0)
-    {
+struct HNode {
+    HNode()
+        : left(NULL), right(NULL), ch(0), weight(0) {
     }
-    HNode(HNode *l, HNode *r) : left(l), right(r), ch(0), weight(l->weight + r->weight)
-    {
+    HNode(HNode *l, HNode *r)
+        : left(l), right(r), ch(0), weight(l->weight + r->weight) {
     }
 
     HNode *left;
@@ -26,37 +25,29 @@ struct HNode
 };
 
 
-struct HNode_comparator
-{
-    bool operator()(const struct HNode *n1, const HNode *n2)
-    {
+struct HNode_comparator {
+    bool operator()(const struct HNode *n1, const HNode *n2) {
         return n1->weight > n2->weight;
     }
 };
 
 
-class frequency_table
-{
+class frequency_table {
 public:
-    frequency_table() : _table(256)
-    {
-        for(unsigned int i = 0; i < _table.size(); ++i)
-        {
+    frequency_table() : _table(256) {
+        for (unsigned int i = 0; i < _table.size(); ++i) {
             _table[i] = new HNode;
             _table[i]->ch = i;
         }
     }
-    ~frequency_table()
-    {
-        for(unsigned int i = 0; i < _table.size(); ++i)
+    ~frequency_table() {
+        for (unsigned int i = 0; i < _table.size(); ++i)
             delete _table[i];
     }
-    void create(ifstream &file)
-    {
-        while(1)
-        {
+    void create(ifstream &file) {
+        while (1) {
             unsigned int uch = file.get();
-            if(file.eof())
+            if (file.eof())
                 break;
             ++_table[uch % _table.size()]->weight;
         }
@@ -64,16 +55,14 @@ public:
         file.clear();
         file.seekg(ios::beg);
     }
-    const HNode* to_tree() const
-    {
+    const HNode* to_tree() const {
         priority_queue<HNode*, vector<HNode*>, HNode_comparator> queue;
-        
-        for(unsigned int i = 0; i < _table.size(); ++i)
-            if(_table[i]->weight != 0)
+
+        for (unsigned int i = 0; i < _table.size(); ++i)
+            if (_table[i]->weight != 0)
                 queue.push(_table[i]);
 
-        while(queue.size() > 1)
-        {
+        while (queue.size() > 1) {
             HNode *one = queue.top();
             queue.pop();
             HNode *two = queue.top();
@@ -84,21 +73,18 @@ public:
 
         return queue.top();
     }
-    friend fstream& operator<<(fstream &file, const frequency_table &table)
-    {
-        for(unsigned int i = 0; i < table._table.size(); ++i)
-            if(table._table[i]->weight != 0)
+    friend fstream& operator<<(fstream &file, const frequency_table &table) {
+        for (unsigned int i = 0; i < table._table.size(); ++i)
+            if (table._table[i]->weight != 0)
                 file << table._table[i]->ch << table._table[i]->weight;
         return file;
     }
-    friend fstream& operator>>(fstream &file, frequency_table &table)
-    {
+    friend fstream& operator>>(fstream &file, frequency_table &table) {
         unsigned int ch, weight;
-        while(1)
-        {
+        while (1) {
             ch = file.get();
             weight = file.get();
-            if(file.eof())
+            if (file.eof())
                 break;
             table._table[ch % table._table.size()]->weight = weight;
         }
@@ -119,7 +105,7 @@ unsigned int code_char(unsigned char uch, const HNode *root, bitset<8> &bits) {
         if (goDown) {
 
             if (now->left == NULL && now->right == NULL) {
-                if(uch == now->ch)
+                if (uch == now->ch)
                     return parents.size();
                 goDown = false;
                 continue;
@@ -161,40 +147,35 @@ unsigned int code_char(unsigned char uch, const HNode *root, bitset<8> &bits) {
 }
 
 
-void code_file(ifstream &in_file, ofstream &out_file, const HNode *tree)
-{
+void code_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
     bitset<8> bits;
 
-    while(1)
-    {
+    while (1) {
         unsigned char uch = in_file.get();
-        if(in_file.eof())
+        if (in_file.eof())
             break;
-    
+
         unsigned int bits_n = code_char(uch, tree, bits);
-        for(unsigned int i = 0; i < bits_n; ++i)
+        for (unsigned int i = 0; i < bits_n; ++i)
             out_file.put(bits[i] ? '1' : '0');
     }
 }
 
 
-void decode_file(ifstream &in_file, ofstream &out_file, const HNode *tree)
-{
+void decode_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
     const HNode *now = tree;
 
-    while(1)
-    {
-        if(now->left == NULL && now->right == NULL)
-        {
+    while (1) {
+        if (now->left == NULL && now->right == NULL) {
             out_file.put(now->ch);
             now = tree;
         }
-        
+
         unsigned char uch = in_file.get();
-        if(in_file.eof())
+        if (in_file.eof())
             break;
-        
-        if(uch == '0')
+
+        if (uch == '0')
             now = now->left;
         else
             now = now->right;
@@ -202,8 +183,7 @@ void decode_file(ifstream &in_file, ofstream &out_file, const HNode *tree)
 }
 
 
-int main()
-{
+int main() {
     // code or decode?
     char type, chbuff[256];
     cout << "[c]ode/[d]ecode: ";
@@ -213,8 +193,7 @@ int main()
     cout << "in: ";
     cin >> chbuff;
     ifstream in_file(chbuff/*"in.txt"*/);
-    if(!in_file)
-    {
+    if (!in_file) {
         cout << "Can't open " << chbuff << "\n";
         system("pause");
         return 1;
@@ -222,8 +201,7 @@ int main()
     cout << "out: ";
     cin >> chbuff;
     ofstream out_file(chbuff/*"in.txt"*/);
-    if(!out_file)
-    {
+    if (!out_file) {
         cout << "Can't open " << chbuff << "\n";
         system("pause");
         return 1;
@@ -231,8 +209,7 @@ int main()
     cout << "table: ";
     cin >> chbuff;
     fstream table_file(chbuff/*"table.txt"*/, type == 'c' ? ios::out : ios::in);
-    if(!table_file)
-    {
+    if (!table_file) {
         cout << "Can't open " << chbuff << "\n";
         system("pause");
         return 1;
@@ -240,16 +217,15 @@ int main()
 
     // fill freq table and get tree
     frequency_table table;
-    if(type == 'c')
-    {
+    if (type == 'c') {
         table.create(in_file);
         table_file << table;
     } else {
         table_file >> table;
     }
     const HNode *tree = table.to_tree();
-    
-    if(type == 'c')
+
+    if (type == 'c')
         code_file(in_file, out_file, tree);
     else
         decode_file(in_file, out_file, tree);
