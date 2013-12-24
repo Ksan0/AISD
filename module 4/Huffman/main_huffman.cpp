@@ -96,7 +96,7 @@ private:
 
 
 // return count of filled bits
-unsigned int code_char(unsigned char uch, const HNode *root, bitset<8> &bits) {
+unsigned int code_char(unsigned char uch, const HNode *root, bitset<256> &bits) {
     const HNode *now = root;
     bool goDown = true;
     stack<const HNode*> parents;
@@ -148,7 +148,7 @@ unsigned int code_char(unsigned char uch, const HNode *root, bitset<8> &bits) {
 
 
 void code_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
-    bitset<8> bits;
+    bitset<256> bits;
 
     while (1) {
         unsigned char uch = in_file.get();
