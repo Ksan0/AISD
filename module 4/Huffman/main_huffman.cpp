@@ -9,6 +9,14 @@
 using namespace std;
 
 
+struct Statistic {
+    Statistic() 
+        : before(0), after(0) {
+    }
+    int before, after;
+};
+
+
 struct HNode {
     HNode()
         : left(NULL), right(NULL), ch(0), weight(0) {
@@ -46,7 +54,8 @@ public:
     }
     void create(ifstream &file) {
         while (1) {
-            unsigned int uch = file.get();
+            unsigned int uch;
+            file.read((char*)&uch, sizeof(uch));
             if (file.eof())
                 break;
             ++_table[uch % _table.size()]->weight;
@@ -61,6 +70,9 @@ public:
         for (unsigned int i = 0; i < _table.size(); ++i)
             if (_table[i]->weight != 0)
                 queue.push(_table[i]);
+
+        if(queue.empty())
+            return NULL;
 
         while (queue.size() > 1) {
             HNode *one = queue.top();
@@ -79,7 +91,6 @@ public:
             {
                 file.write((char*)&(table._table[i]->ch), sizeof(table._table[i]->ch));
                 file.write((char*)&(table._table[i]->weight), sizeof(table._table[i]->weight));
-                //file << table._table[i]->ch << table._table[i]->weight;
             }
         return file;
     }
@@ -152,8 +163,9 @@ unsigned int code_char(unsigned char uch, const HNode *root, bitset<256> &bits) 
 }
 
 
-void code_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
+Statistic code_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
     bitset<256> bits;
+    Statistic stat;
 
     while (1) {
         unsigned char uch;
@@ -164,15 +176,22 @@ void code_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
         unsigned int bits_n = code_char(uch, tree, bits);
         for (unsigned int i = 0; i < bits_n; ++i)
             out_file.put(bits[i] ? '1' : '0');
+
+        stat.before += 8;
+        stat.after += bits_n;
     }
+
+    return stat;
 }
 
 
-void decode_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
+Statistic decode_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
     const HNode *now = tree;
+    Statistic stat;
 
     while (1) {
         if (now->left == NULL && now->right == NULL) {
+            stat.after += 8;
             out_file.put(now->ch);
             now = tree;
         }
@@ -182,11 +201,14 @@ void decode_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
         if (in_file.eof())
             break;
 
+        stat.before += 1;
         if (uch == '0')
             now = now->left;
         else
             now = now->right;
     }
+
+    return stat;
 }
 
 
@@ -195,6 +217,12 @@ int main() {
     char type, chbuff[256];
     cout << "[c]ode/[d]ecode: ";
     cin >> type;
+    if(type != 'c' && type != 'd')
+    {
+        cout << "Unknown operation\n";
+        system("pause");
+        return 1;
+    }
 
     // open files: in, out, table
     cout << "in: ";
@@ -221,7 +249,7 @@ int main() {
         system("pause");
         return 1;
     }
-
+    
     // fill freq table and get tree
     frequency_table table;
     if (type == 'c') {
@@ -231,16 +259,27 @@ int main() {
         table_file >> table;
     }
     const HNode *tree = table.to_tree();
+    if(tree == NULL)
+    {
+        cout << "No table data\n";
+        system("pause");
+        return 1;
+    }
 
+    Statistic stat;
     if (type == 'c')
-        code_file(in_file, out_file, tree);
+        stat = code_file(in_file, out_file, tree);
     else
-        decode_file(in_file, out_file, tree);
+        stat = decode_file(in_file, out_file, tree);
 
     in_file.close();
     out_file.close();
     table_file.close();
 
-    cout << "\n\n";
+    cout << "\nOK\n";
+    cout << "bits before: " << stat.before << "\n";
+    cout << "bits after:  " << stat.after << "\n";
+    cout << "\n";
+    system("pause");
     return 0;
 }
