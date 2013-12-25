@@ -156,7 +156,8 @@ void code_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
     bitset<256> bits;
 
     while (1) {
-        unsigned char uch = in_file.get();
+        unsigned char uch;
+        in_file.read((char*)&uch, sizeof(uch));
         if (in_file.eof())
             break;
 
@@ -176,7 +177,8 @@ void decode_file(ifstream &in_file, ofstream &out_file, const HNode *tree) {
             now = tree;
         }
 
-        unsigned char uch = in_file.get();
+        unsigned char uch;
+        in_file.read((char*)&uch, sizeof(uch));
         if (in_file.eof())
             break;
 
@@ -197,7 +199,7 @@ int main() {
     // open files: in, out, table
     cout << "in: ";
     cin >> chbuff;
-    ifstream in_file(chbuff/*"in.txt"*/);
+    ifstream in_file(chbuff/*"in.txt"*/, ios::binary);
     if (!in_file) {
         cout << "Can't open " << chbuff << "\n";
         system("pause");
@@ -205,7 +207,7 @@ int main() {
     }
     cout << "out: ";
     cin >> chbuff;
-    ofstream out_file(chbuff/*"in.txt"*/);
+    ofstream out_file(chbuff/*"in.txt"*/, ios::binary);
     if (!out_file) {
         cout << "Can't open " << chbuff << "\n";
         system("pause");
