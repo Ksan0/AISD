@@ -76,14 +76,19 @@ public:
     friend fstream& operator<<(fstream &file, const frequency_table &table) {
         for (unsigned int i = 0; i < table._table.size(); ++i)
             if (table._table[i]->weight != 0)
-                file << table._table[i]->ch << table._table[i]->weight;
+            {
+                file.write((char*)&(table._table[i]->ch), sizeof(table._table[i]->ch));
+                file.write((char*)&(table._table[i]->weight), sizeof(table._table[i]->weight));
+                //file << table._table[i]->ch << table._table[i]->weight;
+            }
         return file;
     }
     friend fstream& operator>>(fstream &file, frequency_table &table) {
-        unsigned int ch, weight;
+        unsigned char ch;
+        unsigned int weight;
         while (1) {
-            ch = file.get();
-            weight = file.get();
+            file.read((char*)&ch, sizeof(ch));
+            file.read((char*)&weight, sizeof(weight));
             if (file.eof())
                 break;
             table._table[ch % table._table.size()]->weight = weight;
@@ -208,7 +213,7 @@ int main() {
     }
     cout << "table: ";
     cin >> chbuff;
-    fstream table_file(chbuff/*"table.txt"*/, type == 'c' ? ios::out : ios::in);
+    fstream table_file(chbuff/*"table.txt"*/, ios::binary | (type == 'c' ? ios::out : ios::in));
     if (!table_file) {
         cout << "Can't open " << chbuff << "\n";
         system("pause");
